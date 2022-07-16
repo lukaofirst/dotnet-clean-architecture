@@ -20,8 +20,7 @@ namespace Infraestructure.Repositories
 
         public async Task<List<Person>> GetAll()
         {
-            FilterDefinition<Person> emptyFilter = EmptyFilter();
-            var allPersons = await _personCollection.Find(emptyFilter).ToListAsync();
+            var allPersons = await _personCollection.Find(EmptyFilter()).ToListAsync();
 
             return allPersons;
         }
@@ -33,9 +32,19 @@ namespace Infraestructure.Repositories
             return person;
         }
 
-        public async Task<Person> UpdateOne(Person person)
+        public async Task<Person> UpsertOne(Person person)
         {
-            await _personCollection.ReplaceOneAsync(FilterByObjectId(person._id!), person);
+            var entity = await _personCollection
+                .Find(x => x._id == person._id && x.name == person.name).FirstOrDefaultAsync();
+
+            if(entity == null)
+            {
+                await _personCollection.InsertOneAsync(person);
+            } else
+            {
+                var options = new ReplaceOptions { IsUpsert = true };
+                await _personCollection.ReplaceOneAsync(FilterByObjectId(person._id!), person, options);
+            }
 
             return person;
         }

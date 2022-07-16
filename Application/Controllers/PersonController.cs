@@ -38,12 +38,12 @@ namespace Application.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Person person)
+        public async Task<IActionResult> Upsert(Person person)
         {
             if (String.IsNullOrWhiteSpace(person.name) || person.age <= 0)
                 return ValidationProblem("Name cannot be empty and Age cannot be 0 or negative");
 
-            await _personRepository.UpdateOne(person);
+            await _personRepository.UpsertOne(person);
 
             return Ok(person);
         }

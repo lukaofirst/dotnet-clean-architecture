@@ -6,7 +6,7 @@ namespace Core.Interfaces.Repositories
     {
         Task<List<Person>> GetAll(); 
         Task<Person> InsertOne(Person person);
-        Task<Person> UpdateOne(Person person);
+        Task<Person> UpsertOne(Person person);
         Task DeleteOne(string objectId);
     }
 }

@@ -10,6 +10,7 @@ namespace Core.Entities
         public string? _id { get; set; }
         public string? name { get; set; }
         public int age { get; set; }
+        [BsonIgnoreIfNull]
         public string? job { get; set; }
     }
 }
