@@ -1,7 +1,6 @@
 ﻿using Core.Entities;
-using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace WebAPI.Controllers
 {
@@ -9,17 +8,17 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class PersonsController : ControllerBase
     {
-        private readonly IPersonRepository _personRepository;
+        private readonly IPersonService _personService;
 
-        public PersonsController(IPersonRepository personRepository)
+        public PersonsController(IPersonService personService)
         {
-            _personRepository = personRepository;
+            _personService = personService;
         }
 
         [HttpGet(Name = "GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var persons = await _personRepository.GetAll();
+            var persons = await _personService.GetAll();
 
             return Ok(persons);
         }
@@ -32,7 +31,7 @@ namespace WebAPI.Controllers
             if (String.IsNullOrWhiteSpace(person.name) || person.age <= 0)
                 return ValidationProblem("Name cannot be empty and Age cannot be 0 or negative");
 
-            var entity = await _personRepository.InsertOne(person);
+            var entity = await _personService.InsertOne(person);
 
             return CreatedAtRoute("GetAll", entity);
         }
@@ -43,7 +42,7 @@ namespace WebAPI.Controllers
             if (String.IsNullOrWhiteSpace(person.name) || person.age <= 0)
                 return ValidationProblem("Name cannot be empty and Age cannot be 0 or negative");
 
-            await _personRepository.UpsertOne(person);
+            await _personService.UpsertOne(person);
 
             return Ok(person);
         }
@@ -51,7 +50,7 @@ namespace WebAPI.Controllers
         [HttpDelete("{objectId}")]
         public async Task<IActionResult> Delete(string objectId)
         {
-            await _personRepository.DeleteOne(objectId);
+            await _personService.DeleteOne(objectId);
 
             return Ok(new { message = "Person deleted successfully!" });
         }
