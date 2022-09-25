@@ -35,18 +35,28 @@ namespace Infraestructure.Repositories
         public async Task<Person> UpsertOne(Person person)
         {
             var entity = await _personCollection
-                .Find(x => x._id == person._id && x.name == person.name).FirstOrDefaultAsync();
+                .Find(x => x.name == person.name).FirstOrDefaultAsync();
 
-            if(entity == null)
+            if (entity == null)
             {
                 await _personCollection.InsertOneAsync(person);
-            } else
-            {
-                var options = new ReplaceOptions { IsUpsert = true };
-                await _personCollection.ReplaceOneAsync(FilterByObjectId(person._id!), person, options);
+                return person;
             }
+            else
+            {
+                var mergedEntity = new Person { 
+                    _id = entity._id, 
+                    name = person.name, 
+                    age = person.age, 
+                    job = person.job 
+                };
 
-            return person;
+                var options = new ReplaceOptions { IsUpsert = true };
+                var resultUpdatedEntity = await _personCollection
+                    .ReplaceOneAsync(FilterByObjectId(entity._id!), mergedEntity, options);
+
+                return mergedEntity;
+            }
         }
 
         public async Task DeleteOne(string objectId)
