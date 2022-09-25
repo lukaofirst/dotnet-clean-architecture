@@ -1,8 +1,10 @@
-﻿using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
+﻿using Application.Interfaces.Services;
+using Application.Mappings;
+using Application.Services;
+using Core.Interfaces.Repositories;
 using Infraestructure.Data;
 using Infraestructure.Repositories;
-using Infraestructure.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IoC
@@ -13,6 +15,9 @@ namespace IoC
         {
             // Database Context
             services.AddSingleton<MongoDBContext>();
+
+            // AutoMapper
+            services.AddAutoMapper(typeof(MappingProfile));
 
             // Repositories
             services.AddScoped<IPersonRepository, PersonRepository>();
