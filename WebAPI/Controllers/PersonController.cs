@@ -1,5 +1,5 @@
-﻿using Core.Entities;
-using Core.Interfaces.Services;
+﻿using Application.DTOs;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -24,12 +24,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Person person)
+        public async Task<IActionResult> Post(PersonDTO person)
         {
             if (person == null) return BadRequest();
-
-            if (String.IsNullOrWhiteSpace(person.name) || person.age <= 0)
-                return ValidationProblem("Name cannot be empty and Age cannot be 0 or negative");
 
             var entity = await _personService.InsertOne(person);
 
@@ -37,14 +34,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Upsert(Person person)
+        public async Task<IActionResult> Upsert(PersonDTO person)
         {
-            if (String.IsNullOrWhiteSpace(person.name) || person.age <= 0)
-                return ValidationProblem("Name cannot be empty and Age cannot be 0 or negative");
+            var resultEntity = await _personService.UpsertOne(person);
 
-            await _personService.UpsertOne(person);
-
-            return Ok(person);
+            return Ok(resultEntity);
         }
 
         [HttpDelete("{objectId}")]
