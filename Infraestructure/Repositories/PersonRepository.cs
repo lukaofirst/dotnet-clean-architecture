@@ -28,6 +28,9 @@ namespace Infraestructure.Repositories
 
         public async Task<Person> InsertOne(Person person)
         {
+            var generateObjectId = ObjectId.GenerateNewId();
+            person._id = generateObjectId;
+
             await _personCollection.InsertOneAsync(person);
             return person;
         }
@@ -65,9 +68,9 @@ namespace Infraestructure.Repositories
             await _personCollection.DeleteOneAsync(byObjectId);
         }
 
-        private static FilterDefinition<Person> FilterByObjectId(string objectId)
+        private static FilterDefinition<Person> FilterByObjectId(object objectId)
         {
-            return Builders<Person>.Filter.Eq(x => x._id!, ObjectId.Parse(objectId).ToString());
+            return Builders<Person>.Filter.Eq(x => x._id!, ObjectId.Parse(objectId.ToString()));
         }
 
         private static FilterDefinition<Person> EmptyFilter()
