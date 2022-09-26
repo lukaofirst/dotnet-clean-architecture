@@ -62,10 +62,12 @@ namespace Infraestructure.Repositories
             }
         }
 
-        public async Task DeleteOne(string objectId)
+        public async Task<bool> DeleteOne(string objectId)
         {
             FilterDefinition<Person> byObjectId = FilterByObjectId(objectId);
-            await _personCollection.DeleteOneAsync(byObjectId);
+            var resultDelete = await _personCollection.DeleteOneAsync(byObjectId);
+
+            return resultDelete.DeletedCount > 0;
         }
 
         private static FilterDefinition<Person> FilterByObjectId(object objectId)

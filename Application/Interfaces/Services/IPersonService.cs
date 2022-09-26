@@ -7,6 +7,6 @@ namespace Application.Interfaces.Services
         Task<List<PersonDTO>> GetAll();
         Task<PersonDTO> InsertOne(PersonDTO person);
         Task<PersonDTO> UpsertOne(PersonDTO person);
-        Task DeleteOne(string objectId);
+        Task<bool> DeleteOne(string objectId);
     }
 }

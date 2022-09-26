@@ -40,6 +40,11 @@ namespace Application.Services
             return _mapper.Map<PersonDTO>(resultEntity);
         }
 
-        public async Task DeleteOne(string objectId) => await _personRepository.DeleteOne(objectId);
+        public async Task<bool> DeleteOne(string objectId)
+        {
+            var result = await _personRepository.DeleteOne(objectId);
+
+            return result;
+        }
     }
 }

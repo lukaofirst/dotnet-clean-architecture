@@ -44,9 +44,12 @@ namespace WebAPI.Controllers
         [HttpDelete("{objectId}")]
         public async Task<IActionResult> Delete(string objectId)
         {
-            await _personService.DeleteOne(objectId);
+            var result = await _personService.DeleteOne(objectId);
 
-            return Ok(new { message = "Person deleted successfully!" });
+            return result ? 
+                Ok(new { message = "Person deleted successfully!" }) 
+                : 
+                NotFound();
         }
     }
 }
