@@ -1,83 +1,83 @@
-﻿using Core.Entities;
-using Core.Interfaces.Repositories;
+﻿using Domain.Interfaces.Repositories;
+using Domain.Entities;
 using Infraestructure.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Infraestructure.Repositories
+namespace Infraestructure.Repositories;
+
+public class PersonRepository : IPersonRepository
 {
-    public class PersonRepository : IPersonRepository
-    {
-        private readonly MongoDBContext _mongoDBContext;
-        private readonly IMongoCollection<Person> _personCollection;
-        private const string collectionName = "persons";
+	private readonly MongoDBContext _mongoDBContext;
+	private readonly IMongoCollection<Person> _personCollection;
+	private const string collectionName = "persons";
 
-        public PersonRepository(MongoDBContext mongoDBContext)
-        {
-            _mongoDBContext = mongoDBContext;
-            _personCollection = _mongoDBContext.GetConn().GetCollection<Person>(collectionName);
-        }
+	public PersonRepository(MongoDBContext mongoDBContext)
+	{
+		_mongoDBContext = mongoDBContext;
+		_personCollection = _mongoDBContext.GetConn().GetCollection<Person>(collectionName);
+	}
 
-        public async Task<List<Person>> GetAll()
-        {
-            var allPersons = await _personCollection.Find(EmptyFilter()).ToListAsync();
+	public async Task<List<Person>> GetAll()
+	{
+		var allPersons = await _personCollection.Find(EmptyFilter()).ToListAsync();
 
-            return allPersons;
-        }
+		return allPersons;
+	}
 
 
-        public async Task<Person> InsertOne(Person person)
-        {
-            var generateObjectId = ObjectId.GenerateNewId();
-            person._id = generateObjectId;
+	public async Task<Person> InsertOne(Person person)
+	{
+		var generateObjectId = ObjectId.GenerateNewId();
+		person._id = generateObjectId;
 
-            await _personCollection.InsertOneAsync(person);
-            return person;
-        }
+		await _personCollection.InsertOneAsync(person);
+		return person;
+	}
 
-        public async Task<Person> UpsertOne(Person person)
-        {
-            var entity = await _personCollection
-                .Find(x => x.name == person.name).FirstOrDefaultAsync();
+	public async Task<Person> UpsertOne(Person person)
+	{
+		var entity = await _personCollection
+			.Find(x => x.name == person.name).FirstOrDefaultAsync();
 
-            if (entity == null)
-            {
-                await _personCollection.InsertOneAsync(person);
-                return person;
-            }
-            else
-            {
-                var mergedEntity = new Person { 
-                    _id = entity._id, 
-                    name = person.name, 
-                    age = person.age, 
-                    job = person.job 
-                };
+		if (entity == null)
+		{
+			await _personCollection.InsertOneAsync(person);
+			return person;
+		}
+		else
+		{
+			var mergedEntity = new Person
+			{
+				_id = entity._id,
+				name = person.name,
+				age = person.age,
+				job = person.job
+			};
 
-                var options = new ReplaceOptions { IsUpsert = true };
-                var resultUpdatedEntity = await _personCollection
-                    .ReplaceOneAsync(FilterByObjectId(entity._id!), mergedEntity, options);
+			var options = new ReplaceOptions { IsUpsert = true };
+			var resultUpdatedEntity = await _personCollection
+				.ReplaceOneAsync(FilterByObjectId(entity._id!), mergedEntity, options);
 
-                return mergedEntity;
-            }
-        }
+			return mergedEntity;
+		}
+	}
 
-        public async Task<bool> DeleteOne(string objectId)
-        {
-            FilterDefinition<Person> byObjectId = FilterByObjectId(objectId);
-            var resultDelete = await _personCollection.DeleteOneAsync(byObjectId);
+	public async Task<bool> DeleteOne(string objectId)
+	{
+		FilterDefinition<Person> byObjectId = FilterByObjectId(objectId);
+		var resultDelete = await _personCollection.DeleteOneAsync(byObjectId);
 
-            return resultDelete.DeletedCount > 0;
-        }
+		return resultDelete.DeletedCount > 0;
+	}
 
-        private static FilterDefinition<Person> FilterByObjectId(object objectId)
-        {
-            return Builders<Person>.Filter.Eq(x => x._id!, ObjectId.Parse(objectId.ToString()));
-        }
+	private static FilterDefinition<Person> FilterByObjectId(object objectId)
+	{
+		return Builders<Person>.Filter.Eq(x => x._id!, ObjectId.Parse(objectId.ToString()));
+	}
 
-        private static FilterDefinition<Person> EmptyFilter()
-        {
-            return Builders<Person>.Filter.Empty;
-        }
-    }
+	private static FilterDefinition<Person> EmptyFilter()
+	{
+		return Builders<Person>.Filter.Empty;
+	}
 }
