@@ -2,8 +2,8 @@
 using Application.Mappings;
 using Application.Services;
 using Domain.Interfaces.Repositories;
-using Infraestructure.Data;
-using Infraestructure.Repositories;
+using Infraestructure.Persistence.MongoDB.Context;
+using Infraestructure.Persistence.MongoDB.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IoC;
