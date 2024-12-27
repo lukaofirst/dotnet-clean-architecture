@@ -1,14 +1,13 @@
 ﻿using Application.DTOs;
 using AutoMapper;
-using Core.Entities;
+using Domain.Entities;
 
-namespace Application.Mappings
+namespace Application.Mappings;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-            CreateMap<Person, PersonDTO>().ReverseMap();
-        }
-    }
+	public MappingProfile()
+	{
+		CreateMap<Person, PersonDTO>().ReverseMap();
+	}
 }
