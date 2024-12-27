@@ -14,7 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Adding the SettingConfig class
-builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection(MongoDBSettings.BindName));
+builder.Services.Configure<MongoDBSettings>(
+	builder.Configuration.GetSection(MongoDBSettings.BindName));
 
 builder.Services
 	.AddMvc()

@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,8 +9,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 public class PersonsController(IPersonService personService) : ControllerBase
 {
-
-	[HttpGet(Name = "GetAll")]
+	[HttpGet(Name = nameof(GetAll))]
 	public async Task<IActionResult> GetAll()
 	{
 		var persons = await personService.GetAll();
@@ -17,28 +17,48 @@ public class PersonsController(IPersonService personService) : ControllerBase
 		return Ok(persons);
 	}
 
-	[HttpPost]
-	public async Task<IActionResult> Post(PersonDTO person)
+	[HttpGet("{id:guid}", Name = nameof(GetById))]
+	public async Task<IActionResult> GetById(Guid id)
 	{
-		if (person == null) return BadRequest();
+		var person = await personService.GetById(id);
 
-		var entity = await personService.InsertOne(person);
+		return person is not null ? Ok(person) : NotFound();
+	}
 
-		return CreatedAtRoute("GetAll", entity);
+	[HttpPost]
+	public async Task<IActionResult> Post(PersonDto person)
+	{
+		try
+		{
+			var entity = await personService.InsertOne(person);
+
+			return CreatedAtRoute(nameof(GetById), new { id = entity.Id }, entity);
+		}
+		catch (Exception ex) when (ex is EntityAlreadyExistException)
+		{
+			return Conflict(ex.Message);
+		}
 	}
 
 	[HttpPut]
-	public async Task<IActionResult> Upsert(PersonDTO person)
+	public async Task<IActionResult> Update(PersonDto person)
 	{
-		var resultEntity = await personService.UpsertOne(person);
+		try
+		{
+			var result = await personService.UpdateOne(person);
 
-		return Ok(resultEntity);
+			return Ok(result);
+		}
+		catch (Exception ex) when (ex is EntityNotFoundException)
+		{
+			return NotFound(ex.Message);
+		}
 	}
 
-	[HttpDelete("{objectId}")]
-	public async Task<IActionResult> Delete(string objectId)
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> Delete(Guid id)
 	{
-		var result = await personService.DeleteOne(objectId);
+		var result = await personService.DeleteOne(id);
 
 		return result ?
 			Ok(new { message = "Person deleted successfully!" }) : NotFound();
