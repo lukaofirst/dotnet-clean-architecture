@@ -1,4 +1,4 @@
-using Core.Settings;
+using Infraestructure.Settings;
 using IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,19 +11,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Adding the SettingConfig class
-builder.Services.Configure<SettingsConfig>(builder.Configuration.GetSection("SettingsConfig"));
+builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection(MongoDBSettings.BindName));
 
 builder.Services.AddMvc().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
 
-DependencyContainer.InjectServices(builder.Services);
+DependencyContainer.AddServices(builder.Services);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
