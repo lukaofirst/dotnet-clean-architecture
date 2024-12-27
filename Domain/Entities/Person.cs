@@ -2,8 +2,8 @@
 
 public class Person
 {
-	public object? _id { get; set; }
-	public string? name { get; set; }
-	public int age { get; set; }
-	public string? job { get; set; }
+	public Guid Id { get; set; }
+	public string? Name { get; set; }
+	public int Age { get; set; }
+	public string? Job { get; set; }
 }
