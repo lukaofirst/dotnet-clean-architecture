@@ -14,7 +14,7 @@ public class MongoDBContext
 		db = client.GetDatabase(mongoDBSettingsOptions.Value.DATABASE_NAME);
 	}
 
-	public IMongoDatabase GetConn()
+	public IMongoDatabase GetConnection()
 	{
 		return db;
 	}

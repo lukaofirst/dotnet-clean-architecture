@@ -6,21 +6,19 @@ using MongoDB.Driver;
 
 namespace Infraestructure.Repositories;
 
-public class PersonRepository : IPersonRepository
+public class PersonRepository(MongoDBContext mongoDBContext) : IPersonRepository
 {
-	private readonly MongoDBContext _mongoDBContext;
-	private readonly IMongoCollection<Person> _personCollection;
-	private const string collectionName = "persons";
+	private readonly IMongoCollection<Person> _personCollection = mongoDBContext
+		.GetConnection()
+		.GetCollection<Person>(collectionName);
 
-	public PersonRepository(MongoDBContext mongoDBContext)
-	{
-		_mongoDBContext = mongoDBContext;
-		_personCollection = _mongoDBContext.GetConn().GetCollection<Person>(collectionName);
-	}
+	private const string collectionName = "persons";
 
 	public async Task<List<Person>> GetAll()
 	{
-		var allPersons = await _personCollection.Find(EmptyFilter()).ToListAsync();
+		var allPersons = await _personCollection
+			.Find(EmptyFilter())
+			.ToListAsync();
 
 		return allPersons;
 	}
@@ -38,7 +36,8 @@ public class PersonRepository : IPersonRepository
 	public async Task<Person> UpsertOne(Person person)
 	{
 		var entity = await _personCollection
-			.Find(x => x.name == person.name).FirstOrDefaultAsync();
+			.Find(x => x.name == person.name)
+			.FirstOrDefaultAsync();
 
 		if (entity == null)
 		{
@@ -65,7 +64,7 @@ public class PersonRepository : IPersonRepository
 
 	public async Task<bool> DeleteOne(string objectId)
 	{
-		FilterDefinition<Person> byObjectId = FilterByObjectId(objectId);
+		var byObjectId = FilterByObjectId(objectId);
 		var resultDelete = await _personCollection.DeleteOneAsync(byObjectId);
 
 		return resultDelete.DeletedCount > 0;

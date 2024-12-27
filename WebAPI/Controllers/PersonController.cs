@@ -6,19 +6,13 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PersonsController : ControllerBase
+public class PersonsController(IPersonService personService) : ControllerBase
 {
-	private readonly IPersonService _personService;
-
-	public PersonsController(IPersonService personService)
-	{
-		_personService = personService;
-	}
 
 	[HttpGet(Name = "GetAll")]
 	public async Task<IActionResult> GetAll()
 	{
-		var persons = await _personService.GetAll();
+		var persons = await personService.GetAll();
 
 		return Ok(persons);
 	}
@@ -28,7 +22,7 @@ public class PersonsController : ControllerBase
 	{
 		if (person == null) return BadRequest();
 
-		var entity = await _personService.InsertOne(person);
+		var entity = await personService.InsertOne(person);
 
 		return CreatedAtRoute("GetAll", entity);
 	}
@@ -36,7 +30,7 @@ public class PersonsController : ControllerBase
 	[HttpPut]
 	public async Task<IActionResult> Upsert(PersonDTO person)
 	{
-		var resultEntity = await _personService.UpsertOne(person);
+		var resultEntity = await personService.UpsertOne(person);
 
 		return Ok(resultEntity);
 	}
@@ -44,11 +38,9 @@ public class PersonsController : ControllerBase
 	[HttpDelete("{objectId}")]
 	public async Task<IActionResult> Delete(string objectId)
 	{
-		var result = await _personService.DeleteOne(objectId);
+		var result = await personService.DeleteOne(objectId);
 
 		return result ?
-			Ok(new { message = "Person deleted successfully!" })
-			:
-			NotFound();
+			Ok(new { message = "Person deleted successfully!" }) : NotFound();
 	}
 }

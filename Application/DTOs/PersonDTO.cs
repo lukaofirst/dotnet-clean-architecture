@@ -8,12 +8,18 @@ public class PersonDTO
 {
 	[BsonId]
 	[BsonRepresentation(BsonType.ObjectId)]
-	public string? _id { get; set; }
+	public string? Id { get; set; }
+
+	[BsonElement("name")]
 	[Required]
 	[StringLength(120)]
-	public string? name { get; set; }
+	public string? Name { get; set; }
+
+	[BsonElement("age")]
 	[Range(0, 99)]
-	public int age { get; set; }
+	public int Age { get; set; }
+
+	[BsonElement("job")]
 	[BsonIgnoreIfNull]
-	public string? job { get; set; }
+	public string? Job { get; set; }
 }

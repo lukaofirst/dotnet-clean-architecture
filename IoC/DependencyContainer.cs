@@ -4,14 +4,13 @@ using Application.Services;
 using Domain.Interfaces.Repositories;
 using Infraestructure.Data;
 using Infraestructure.Repositories;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IoC;
 
-public class DependencyContainer
+public static class DependencyContainer
 {
-	public static void AddServices(IServiceCollection services)
+	public static void AddServices(this IServiceCollection services)
 	{
 		// Database Context
 		services.AddSingleton<MongoDBContext>();
