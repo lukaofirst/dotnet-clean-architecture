@@ -1,29 +1,28 @@
 ﻿using Application.Interfaces.Services;
 using Application.Mappings;
 using Application.Services;
-using Core.Interfaces.Repositories;
+using Domain.Interfaces.Repositories;
 using Infraestructure.Data;
 using Infraestructure.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IoC
+namespace IoC;
+
+public class DependencyContainer
 {
-    public class DependencyContainer
-    {
-        public static void InjectServices(IServiceCollection services)
-        {
-            // Database Context
-            services.AddSingleton<MongoDBContext>();
+	public static void AddServices(IServiceCollection services)
+	{
+		// Database Context
+		services.AddSingleton<MongoDBContext>();
 
-            // AutoMapper
-            services.AddAutoMapper(typeof(MappingProfile));
+		// AutoMapper
+		services.AddAutoMapper(typeof(MappingProfile));
 
-            // Repositories
-            services.AddScoped<IPersonRepository, PersonRepository>();
+		// Repositories
+		services.AddScoped<IPersonRepository, PersonRepository>();
 
-            // Services
-            services.AddScoped<IPersonService, PersonService>();
-        }
-    }
+		// Services
+		services.AddScoped<IPersonService, PersonService>();
+	}
 }
