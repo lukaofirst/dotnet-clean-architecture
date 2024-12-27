@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
@@ -10,32 +11,53 @@ public class PersonService(
 	IPersonRepository personRepository,
 	IMapper mapper) : IPersonService
 {
-	public async Task<List<PersonDTO>> GetAll()
+	public async Task<List<PersonDto>> GetAll()
 	{
 		var entities = await personRepository.GetAll();
 
-		return mapper.Map<List<PersonDTO>>(entities);
+		return mapper.Map<List<PersonDto>>(entities);
 	}
 
-	public async Task<PersonDTO> InsertOne(PersonDTO person)
+	public async Task<PersonDto?> GetById(Guid id)
 	{
-		var mappedEntity = mapper.Map<Person>(person);
-		var resultEntity = await personRepository.InsertOne(mappedEntity);
+		var entity = await personRepository.GetById(id);
 
-		return mapper.Map<PersonDTO>(resultEntity);
+		if (entity is null) return null;
+
+		return mapper.Map<PersonDto>(entity);
 	}
 
-	public async Task<PersonDTO> UpsertOne(PersonDTO person)
+	public async Task<PersonDto> InsertOne(PersonDto personDto)
 	{
-		var mappedEntity = mapper.Map<Person>(person);
-		var resultEntity = await personRepository.UpsertOne(mappedEntity);
+		var personExist = await GetById(personDto.Id);
 
-		return mapper.Map<PersonDTO>(resultEntity);
+		if (personExist is not null)
+			throw new EntityAlreadyExistException("Entity already exist in database");
+
+		var person = mapper.Map<Person>(personDto);
+
+		var result = await personRepository.InsertOne(person);
+
+		return mapper.Map<PersonDto>(result);
 	}
 
-	public async Task<bool> DeleteOne(string objectId)
+	public async Task<PersonDto> UpdateOne(PersonDto personDto)
 	{
-		var result = await personRepository.DeleteOne(objectId);
+		var personExist = await GetById(personDto.Id);
+
+		if (personExist is null)
+			throw new EntityNotFoundException("Entity doesn't exist in database");
+
+		var person = mapper.Map<Person>(personDto);
+
+		var result = await personRepository.UpdateOne(person);
+
+		return mapper.Map<PersonDto>(result);
+	}
+
+	public async Task<bool> DeleteOne(Guid id)
+	{
+		var result = await personRepository.DeleteOne(id);
 
 		return result;
 	}
