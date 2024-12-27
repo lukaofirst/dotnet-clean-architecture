@@ -6,7 +6,7 @@
 
 <h4>Project's Details</h4>
 
--   The Core's layer contains the Entities, Interfaces and Settings Variables
+-   The Domain's layer contains the Entities, Interfaces and Settings Variables
 -   The Infraestructure's layer contains the Database Context, in this case was used MongoDB and all the application's Repositories
 -   The Application's layer contains all the Services, Mappings and DTOs
 -   The IoC's layer contains all the subscriptions to the project
@@ -26,7 +26,7 @@
 
 <h4>Detalhes do Projeto</h4>
 
--   A camada Core contém as Entidades, Interfaces e Variáveis de Configuração
+-   A camada Domain contém as Entidades, Interfaces e Variáveis de Configuração
 -   A camada de Infraestrutura contém o Contexto do Banco de Dados, nesse caso foi utilizado MongoDB e os Repositórios da aplicação
 -   A camada de Aplicação contêm os Serviços, Mapeamentos e DTOs
 -   A camada IoC contém todas a subinscrições do projeto
